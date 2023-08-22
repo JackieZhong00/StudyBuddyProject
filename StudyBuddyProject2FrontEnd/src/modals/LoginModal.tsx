@@ -1,10 +1,10 @@
-import { useCallback } from 'react'
+import { useCallback} from 'react'
 import useLoginModal from '../hooks/useLoginModal'
 import useRegisterModal from '../hooks/useRegisterModal'
 import Modal from './Modal'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import axios from 'axios'
-import { toast } from 'react-hot-toast'
+// import { toast } from 'react-hot-toast'
 
 type loginInfo = {
   email: string
@@ -14,6 +14,8 @@ type loginInfo = {
 const LoginModal = () => {
   const loginModal = useLoginModal()
   const registerModal = useRegisterModal()
+  // const [loginData, setLoginData] = useState({})
+  
 
   const toggleModal = useCallback(() => {
     loginModal.onClose()
@@ -34,9 +36,10 @@ const LoginModal = () => {
   const onSubmit: SubmitHandler<loginInfo> = async (data) => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/auth/login',
-        data
+        'http://localhost:8080/auth/login', 
+        data, {withCredentials: true}
       )
+      // setLoginData(response.data)
       loginModal.onClose()
       window.location.href = `/profile/${response.data._id}`
     } catch (error) {

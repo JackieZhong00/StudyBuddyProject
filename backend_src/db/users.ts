@@ -10,18 +10,31 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  pictureUpload: {
+    type: String,
+    required: false
+  },
   dates: {
     type: [Date],
-    required:false
+    required: false,
   },
   locations: {
     type: [String],
-    required: false
+    required: false,
   },
   promptResponses: {
-    type:[String],
-    required:false
+    type: [String],
+    required: false,
   },
+  savedEvents: {
+    type: [Object],
+    required: false
+  },
+  contactInfo: {
+    type: String,
+    required: true
+  },
+  
   authentication: {
     password: {
       type: String,

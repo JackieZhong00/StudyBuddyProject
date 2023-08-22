@@ -31,8 +31,9 @@ export const isAuthenticated = async (
 ) => {
   try {
     const sessionToken = req.cookies['JACKIE-AUTH']
+    // console.log(sessionToken)
     if (!sessionToken) {
-      return console.log(req.cookies)
+      return console.log('no sessionToken')
     }
     const existingUser = await getUserBySessionToken(sessionToken)
     if (!existingUser) {
@@ -45,4 +46,8 @@ export const isAuthenticated = async (
     res.sendStatus(400)
   }
 }
+
+
+
+
 

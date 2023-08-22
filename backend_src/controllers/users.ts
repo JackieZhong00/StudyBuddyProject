@@ -46,10 +46,11 @@ export const updateUser = async (
       return res.sendStatus(400)
     }
     const user = await getUserById(id)
-
-    user.username = username
-    await user.save()
-    return res.status(200).json(user).end()
+    if (user) {
+      user.username = username
+      await user.save()
+      return res.status(200).json(user).end()
+    }
   } catch (error) {
     return res.sendStatus(400)
   }
@@ -61,17 +62,20 @@ export const updateUserProfile = async (
 ) => {
   try {
     const { id } = req.params
-    const { dates, locations, promptResponses } = req.body
-    if (!dates || !locations || !promptResponses) {
-      return res.sendStatus(400)
+    const { dates, locations, promptResponses, pictureUpload } = req.body
+    if (!dates || !locations || !promptResponses || !pictureUpload) {
+      // return res.sendStatus(400)
+      return console.log('no dates/locations/promptResponses')
     }
     const user = await getUserById(id)
     if (user) {
-      user.dates = [...user.dates]
-      user.locations = [...user.locations]
-      user.promptResponses = [...user.locations]
+      user.dates = dates
+      user.locations = locations
+      user.promptResponses = promptResponses
+      user.pictureUpload = pictureUpload
       await user.save()
     }
+    return res.status(200).json(user).end()
   } catch (error) {
     return res.sendStatus(400)
   }
@@ -94,4 +98,24 @@ export const getUserInfo = async (
   }
 }
 
-
+export const saveEvent = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { id } = req.params
+    const { savedEvent } = req.body
+    if (!savedEvent) {
+      console.log('no events saved')
+    }
+    const user = await getUserById(id)
+    if (user) {
+      user.savedEvents.push(savedEvent)
+      await user.save()
+    }
+    return res.status(200).json(user).end()
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+}

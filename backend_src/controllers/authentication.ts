@@ -1,6 +1,6 @@
 import express from 'express'
 import { random, authentication } from '../helpers'
-
+import cookieParser from 'cookie-parser'
 import { getUserByEmail, createUser } from '../db/users'
 
 export const login = async (req: express.Request, res: express.Response) => {
@@ -27,12 +27,13 @@ export const login = async (req: express.Request, res: express.Response) => {
         salt,
         user._id.toString()
       )
-    
+
       await user.save()
       res.cookie('JACKIE-AUTH', user.authentication.sessionToken, {
         domain: 'localhost',
         path: '/',
       })
+      // console.log(res)
       return res.status(200).json(user).end()
     }
   } catch (error) {
@@ -40,6 +41,8 @@ export const login = async (req: express.Request, res: express.Response) => {
     return res.sendStatus(400)
   }
 }
+
+
 
 export const register = async (req: express.Request, res: express.Response) => {
   try {
@@ -66,3 +69,4 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res.sendStatus(400)
   }
 }
+
