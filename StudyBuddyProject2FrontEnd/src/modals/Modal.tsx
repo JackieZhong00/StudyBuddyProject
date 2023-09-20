@@ -42,17 +42,13 @@ const Modal: React.FC<ModalProps> = ({
     return null
   }
   return (
-    // <div>
-    //   <h1>{title}</h1>
-    //   <div>{body}</div>
-    //   <div className="">{footer}</div>
-    // </div>
     <>
       <div
         className={`
+            absolute
+            w-[650px]
             translate
             duration-300
-            h-full
             ${showModal ? 'translate-y-0' : 'translate-y-full'}
             ${showModal ? 'opacity-100' : 'opacity-0'}
             
@@ -61,7 +57,6 @@ const Modal: React.FC<ModalProps> = ({
         <div
           className="
               translate
-              h-full
               lg:h-auto
               md:h-auto
               border-0 
@@ -70,7 +65,6 @@ const Modal: React.FC<ModalProps> = ({
               relative 
               flex 
               flex-col 
-              w-full 
               bg-white 
               outline-none 
               focus:outline-none

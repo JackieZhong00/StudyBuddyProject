@@ -1,5 +1,5 @@
 import Navbar from './Navbar'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import LocationDateCard from './LocationDateCard'
 import { useParams } from 'react-router-dom'
@@ -13,10 +13,8 @@ interface currentUser {
   _id: string
 }
 
-
 const Explore = () => {
   const [allUsers, setAllUsers] = useState([])
-  const [dbFetch, setDbFetch] = useState(false)
   const [shownUsers, setShownUsers] = useState<string[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentUser, setCurrentUser] = useState<currentUser>({
@@ -26,86 +24,86 @@ const Explore = () => {
     promptResponses: [''],
     _id: '',
   })
-  const {id} = useParams<UseParams>()
-  // //fetches shownUsers array from local storage --> then sets shownUsers state value with it
-  // useEffect(() => {
-  //   const storedShownUsers = localStorage.getItem('shownUsers')
-  //   if (storedShownUsers) {
-  //     try {
-  //       const parsedUsers = JSON.parse(storedShownUsers)
-  //       setShownUsers(parsedUsers)
-  //     } catch (error) {
-  //       console.error('Error parsing storedShownUsers:', error)
-  //     }
-  //   }
-  // }, [])
-
-  // //fetches from mongodb and filters using shownUsers
-  // useEffect(() => {
-  //   axios
-  //     .get('http://localhost:8080/users', { withCredentials: true })
-  //     .then((res) => {
-  //       setAllUsers(
-  //         res.data.filter((user: currentUser) => !shownUsers.includes(user._id))
-  //       )
-  //     })
-  //     .catch((e) => console.log(e))
-  // }, [])
-
-  // // upon click --> adds new id to shownUsers array, sets currentUser to be the next one in allUsers
-  // useEffect(() => {
-  //   if (allUsers.length > 0) {
-  //     setCurrentUser(allUsers[currentIndex])
-  //     setShownUsers((prev) => [...prev, currentUser._id]) // insert id of current user into shownUsers
-  //   }
-  // }, [currentIndex, allUsers])
-
-  // const nextUserIndex = () => {
-  //   setCurrentIndex((prev) => {
-  //     return prev + 1
-  //   })
-  // }
-
-  // // stores shownUsers in local storage with every id that is added to the array
-  // useEffect(() => {
-  //   window.localStorage.setItem('shownUsers', JSON.stringify(shownUsers))
-  // }, [shownUsers])
-
+  const { id } = useParams<UseParams>()
+  //fetches shownUsers array from local storage --> then sets shownUsers state value with it
   useEffect(() => {
-    axios
-      .get('http://localhost:8080/users', { withCredentials: true })
-      .then((res) => {
-        window.localStorage.setItem('users', JSON.stringify(res.data))
-        setDbFetch(true)
-      })
-      .catch((e) => console.log(e))
-  }, [dbFetch])
-
-  useEffect(() => {
-    const fetchedUsers = window.localStorage.getItem('users')
-    if (fetchedUsers) {
+    const storedShownUsers = localStorage.getItem('shownUsers')
+    if (storedShownUsers) {
       try {
-        const parsedUsers = JSON.parse(fetchedUsers)
-        setAllUsers(parsedUsers)
+        const parsedUsers = JSON.parse(storedShownUsers)
+        setShownUsers(parsedUsers)
       } catch (error) {
         console.error('Error parsing storedShownUsers:', error)
       }
     }
   }, [])
 
-  const nextUserIndex = () => {
-    const newUsersList = allUsers.slice(1)
-    window.localStorage.setItem('users', JSON.stringify(newUsersList))
-    setCurrentIndex((prev) => prev + 1)
-  }
+  //fetches from mongodb and filters using shownUsers
+  useEffect(() => {
+    axios
+      .get('http://localhost:8080/users', { withCredentials: true })
+      .then((res) => {
+        setAllUsers(
+          res.data.filter((user: currentUser) => !shownUsers.includes(user._id))
+        )
+      })
+      .catch((e) => console.log(e))
+  }, [])
 
+  // upon click --> adds new id to shownUsers array, sets currentUser to be the next one in allUsers
   useEffect(() => {
     if (allUsers.length > 0) {
       setCurrentUser(allUsers[currentIndex])
+      setShownUsers((prev) => [...prev, currentUser._id]) // insert id of current user into shownUsers
     }
   }, [currentIndex, allUsers])
 
-  console.log(allUsers)
+  const nextUserIndex = useCallback(() => {
+    setCurrentIndex((prev) => {
+      return prev + 1
+    })
+  },[])
+
+  // stores shownUsers in local storage with every id that is added to the array
+  useEffect(() => {
+    window.localStorage.setItem('shownUsers', JSON.stringify(shownUsers))
+  }, [shownUsers])
+
+  // useEffect(() => {
+  //   axios
+  //     .get('http://localhost:8080/users', { withCredentials: true })
+  //     .then((res) => {
+  //       window.localStorage.setItem('users', JSON.stringify(res.data))
+  //       setDbFetch(true)
+  //     })
+  //     .catch((e) => console.log(e))
+  // }, [dbFetch])
+
+  // useEffect(() => {
+  //   const fetchedUsers = window.localStorage.getItem('users')
+  //   if (fetchedUsers) {
+  //     try {
+  //       const parsedUsers = JSON.parse(fetchedUsers)
+  //       setAllUsers(parsedUsers)
+  //     } catch (error) {
+  //       console.error('Error parsing storedShownUsers:', error)
+  //     }
+  //   }
+  // }, [])
+
+  // const nextUserIndex = () => {
+  //   const newUsersList = allUsers.slice(1)
+  //   window.localStorage.setItem('users', JSON.stringify(newUsersList))
+  //   setCurrentIndex((prev) => prev + 1)
+  // }
+
+  // useEffect(() => {
+  //   if (allUsers.length > 0) {
+  //     setCurrentUser(allUsers[currentIndex])
+  //   }
+  // }, [currentIndex, allUsers])
+
+  // console.log(allUsers)
 
   return (
     <>
@@ -159,47 +157,48 @@ const Explore = () => {
                 />
               }
             </div>
-            <div>
+            <div className="flex flex-col space-y-4 absolute top-52 left-20 w-full">
               <div
                 className="bg-white border 
             border-solid border-black 
-            rounded-lg flex flex-col absolute top-52 left-20 lg:w-4/5 md:w-2/3 sm:w-2/4 
+            rounded-lg lg:w-4/5 md:w-2/3 sm:w-2/4 
+            h-28 "
+              >
+                <label htmlFor="contactInfo">
+                  My instagram handle/email/number is...
+                </label>
+                <hr className="border-t-2 border-black"></hr>
+                <input defaultValue={currentUser.promptResponses[0]} readOnly />
+              </div>
+              <div
+                className="bg-white border 
+            border-solid border-black 
+            rounded-lg lg:w-4/5 md:w-2/3 sm:w-2/4 
             h-28"
               >
-                <label htmlFor="career-prompt">
+                <label htmlFor="contactInfo">
                   What are your career aspirations?
                 </label>
-                {/* <input
-                type="text"
-                id="career-prompt"
-                className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
-              /> */}
                 <hr className="border-t-2 border-black"></hr>
 
-                <input defaultValue={currentUser.promptResponses[0]} readOnly />
+                <input defaultValue={currentUser.promptResponses[1]} readOnly />
               </div>
               <div
                 className="bg-white border
             border-solid border-black
-            rounded-lg flex flex-col absolute top-2/4 left-20 lg:w-4/5 md:w-2/3 sm:w-2/4 
+            rounded-lg lg:w-4/5 md:w-2/3 sm:w-2/4 
             h-28"
               >
                 <label htmlFor="enviro-prompt">
                   What is your ideal study environment?
                 </label>
                 <hr className="border-t-2 border-black"></hr>
-
-                {/* <input
-                id="enviro-prompt"
-                type="text"
-                className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
-              /> */}
-                <input defaultValue={currentUser.promptResponses[1]} readOnly />
+                <input defaultValue={currentUser.promptResponses[2]} readOnly />
               </div>
               <div
                 className="bg-white border
             border-solid border-black
-            rounded-lg flex flex-col absolute top-3/4 left-20 lg:w-4/5 md:w-2/3 sm:w-2/4 
+            rounded-lg lg:w-4/5 md:w-2/3 sm:w-2/4 
             h-28"
               >
                 <label htmlFor="traits-prompt">
@@ -212,12 +211,12 @@ const Explore = () => {
                 type="text"
                 className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
               /> */}
-                <input defaultValue={currentUser.promptResponses[2]} readOnly />
+                <input defaultValue={currentUser.promptResponses[3]} readOnly />
               </div>
               <div
                 className="bg-white border
             border-solid border-black
-            rounded-lg flex flex-col absolute top-[98%] left-20 lg:w-4/5 md:w-2/3 sm:w-2/4 
+            rounded-lg left-20 lg:w-4/5 md:w-2/3 sm:w-2/4 
             h-28"
               >
                 <label htmlFor="hobbies-prompt">
@@ -235,7 +234,7 @@ const Explore = () => {
                   id="hobbies-prompt"
                   className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
                 /> */}
-                <input defaultValue={currentUser.promptResponses[3]} readOnly />
+                <input defaultValue={currentUser.promptResponses[4]} readOnly />
               </div>
             </div>
           </div>

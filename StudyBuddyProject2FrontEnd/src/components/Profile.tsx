@@ -4,7 +4,6 @@ import { z, ZodType } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
 
-
 // import getUserProfile from '../actions/getUserProfile'
 
 import ReactDatePicker from 'react-datepicker'
@@ -13,7 +12,7 @@ import profile from '../images/profile.jpg'
 
 import axios from 'axios'
 import Navbar from './Navbar'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type ProfileFormData = {
   date1: Date
@@ -77,6 +76,7 @@ const Profile = () => {
       .catch((error) => console.log(error))
   }, [id])
 
+  const userInfo = useMemo(() => fetchedUserInfo, [fetchedUserInfo])
   //this is called upon file upload (onchange func of input element) --> sets image stateValue --> this state value is used in onSubmit func later on
   const handleFileUpload = async (e) => {
     const file = e.target.files[0]
@@ -105,26 +105,31 @@ const Profile = () => {
   const {
     register,
     control,
-    setValue,
     reset,
     handleSubmit,
     formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
-    // defaultValues: {
-    //   date1: new Date(),
-    //   date2: new Date(),
-    //   date3: new Date(),
-    //   date4: new Date(),
-    //   location1: '',
-    //   location2: '',
-    //   location3: '',
-    //   location4: '',
-    //   careerPrompt: '',
-    //   enviroPrompt: '',
-    //   traitsPrompt: '',
-    //   hobbiesPrompt: '',
-    // },
+    defaultValues: async () => {
+      const response = await fetch(`http://localhost:8080/users/${id}`, {method: "GET", "credentials": "include"})
+      const data = await response.json()
+      console.log(data)
+      return {
+        date1: Date.parse(data.dates[0]),
+        date2: Date.parse(data.dates[1]),
+        date3: Date.parse(data.dates[2]),
+        date4: Date.parse(data.dates[3]),
+        location1: data.locations[0],
+        location2: data.locations[1],
+        location3: data.locations[2],
+        location4: data.locations[3],
+        contactInfo: data.promptResponses[0],
+        careerPrompt: data.promptResponses[1],
+        enviroPrompt: data.promptResponses[2],
+        traitsPrompt: data.promptResponses[3],
+        hobbiesPrompt: data.promptResponses[4],
+      }
+    },
   })
 
   // const pictureUpload = register('pictureUpload')
@@ -134,7 +139,7 @@ const Profile = () => {
   const { field: date3 } = useController({ name: 'date3', control })
   const { field: date4 } = useController({ name: 'date4', control })
 
-  const handleDateChange = (name: string, option: Date | null) => {
+  const handleDateChange = useCallback((name: string, option: Date | null) => {
     if (name === 'date1') {
       date1.onChange(option)
     } else if (name === 'date2') {
@@ -144,7 +149,7 @@ const Profile = () => {
     } else {
       date4.onChange(option)
     }
-  }
+  }, [])
 
   const handleSave: SubmitHandler<ProfileFormData> = (
     event: ProfileFormData
@@ -194,9 +199,8 @@ const Profile = () => {
       >
         <div className="p-10">
           {/* fetch and render name */}
-          <h1>{fetchedUserInfo?.username}</h1>
-          <h1>{fetchedUserInfo?.email}</h1>
-          {/* <img src={fetchedUserInfo.pictureUpload}/> */}
+          <h1>{userInfo?.username}</h1>
+          <h1>{userInfo?.email}</h1>
         </div>
         <div className="p-10">
           <label htmlFor="pictureUpload" className="cursor-pointer">
@@ -249,7 +253,6 @@ const Profile = () => {
             <input
               type="text"
               //   placeholder="Starbucks"
-              defaultValue={fetchedUserInfo.locations?.[0]}
               id="location1"
               {...register('location1')}
             />
@@ -269,7 +272,6 @@ const Profile = () => {
             <input
               type="text"
               id="location2"
-              defaultValue={fetchedUserInfo.locations?.[1]}
               {...register('location2')}
             />
           </div>
@@ -286,7 +288,6 @@ const Profile = () => {
             />
             <label htmlFor="location3">Location</label>
             <input
-              defaultValue={fetchedUserInfo.locations?.[2]}
               type="text"
               id="location3"
               {...register('location3')}
@@ -305,7 +306,6 @@ const Profile = () => {
             />
             <label htmlFor="location4">Location</label>
             <input
-              defaultValue={fetchedUserInfo.locations?.[3]}
               type="text"
               id="location4"
               {...register('location4')}
@@ -319,7 +319,6 @@ const Profile = () => {
           <input
             type="text"
             id="contactInfo"
-            defaultValue={fetchedUserInfo.promptResponses?.[0]}
             {...register('contactInfo')}
           />
         </div>
@@ -335,7 +334,6 @@ const Profile = () => {
             // }
             type="text"
             id="careerPrompt"
-            defaultValue={fetchedUserInfo.promptResponses?.[1]}
             {...register('careerPrompt')}
           />
         </div>
@@ -346,7 +344,6 @@ const Profile = () => {
           <input
             type="text"
             id="enviroPrompt"
-            defaultValue={fetchedUserInfo.promptResponses?.[2]}
             {...register('enviroPrompt')}
           />
         </div>
@@ -355,7 +352,6 @@ const Profile = () => {
             What are 3 traits you're looking for in a study buddy?
           </label>
           <input
-            defaultValue={fetchedUserInfo.promptResponses?.[3]}
             type="text"
             id="traitsPrompt"
             {...register('traitsPrompt')}
@@ -366,10 +362,8 @@ const Profile = () => {
             Outside of studying/working, what do you like to do for fun?
           </label>
           <input
-            defaultValue={fetchedUserInfo.promptResponses?.[4]}
             type="text"
             id="hobbiesPrompt"
-            // placeholder='birdwatching'
             {...register('hobbiesPrompt')}
           />
         </div>

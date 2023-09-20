@@ -63,7 +63,7 @@ const LoginModal = () => {
         <input
           id="password"
           placeholder="password"
-          type="text"
+          type="password"
           {...register('password')}
         />
       </div>

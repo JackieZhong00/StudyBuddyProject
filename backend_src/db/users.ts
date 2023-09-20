@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema({
   },
   contactInfo: {
     type: String,
-    required: true
+    required: false
   },
   
   authentication: {

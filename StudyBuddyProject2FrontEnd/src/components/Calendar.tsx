@@ -66,16 +66,6 @@ const Calendar = () => {
     //     Subject: 'testing',
     //   },
     // ],
-    // dataSource: [
-    //   {
-    //     savedEvents.map((event)=>{
-    //           const endDate = new Date(event.date)
-    //           EndTime: endDate.setDate(endDate.getDate() +1)
-    //           StartTime: new Date(event.date)
-    // })
-
-    //   }
-    // ]
     dataSource: transformEvents(savedEvents),
   }
 
