@@ -11,7 +11,7 @@ interface UseParams {
 const Navbar = () => {
   const { id } = useParams<UseParams>()
   return (
-    <div className="fixed bottom-0 flex justify-center align-middle w-full ">
+    <div className="">
       <a className="px-16" href={`/explore/${id}`}>
         <img src={search} className="rounded-full w-12 h-12" />
       </a>

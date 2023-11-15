@@ -21,7 +21,7 @@ const LocationDateCard: React.FC<LocationDateCardProps> = ({
 
   return (
     <button
-      className="border border-solid border-black bg-orange-500 rounded-lg w-28 h-40"
+      className="border border-solid border-black bg-white rounded-lg w-28 h-40"
       onClick={addEvent}
     >
       <div>

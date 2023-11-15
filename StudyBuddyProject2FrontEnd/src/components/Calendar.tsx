@@ -34,16 +34,7 @@ const Calendar = () => {
       .catch((e) => console.log(e))
   }, [])
 
-  // function dayOfYear(dateString: string): number {
-  //   const date = new Date(dateString)
-  //   const startOfYear = new Date(date.getFullYear(), 0, 1) // January 1st
-  //   const millisecondsInADay = 24 * 60 * 60 * 1000
-  //   const dayNumber =
-  //     Math.floor(
-  //       (date.getTime() - startOfYear.getTime()) / millisecondsInADay
-  //     ) + 1
-  //   return dayNumber
-  // }
+ 
 
   const transformEvents = (events: SavedEvents[]): TransformedEvent[] => {
     return events.map((event) => {
@@ -59,27 +50,24 @@ const Calendar = () => {
     })
   }
   const eventsData: EventSettingsModel = {
-    // dataSource: [
-    //   {
-    //     EndTime: new Date(2023, 0, 240, 6, 30),
-    //     StartTime: new Date(2023, 0, 240, 12, 0), // amt of days, number of day (__/365), hour, minute
-    //     Subject: 'testing',
-    //   },
-    // ],
+
     dataSource: transformEvents(savedEvents),
   }
 
   console.log(savedEvents)
 
   return (
-    <>
-      <div className="pt-52 mx-10">
+    <section className="bg-black">
+      <div className="fixed top-10 flex-col justify-center align-middle ml-10 h-full">
+        <Navbar />
+      </div>
+      <h1 className='flex absolute top-[20%] left-[40%] text-white text-4xl font-bold'>Saved Study Dates</h1>
+      <div className="pt-80 mx-10 pb-60">
         <ScheduleComponent currentView="Month" eventSettings={eventsData}>
           <Inject services={[Day, Week, Month]} />
         </ScheduleComponent>
-        <Navbar />
       </div>
-    </>
+    </section>
   )
 }
 export default Calendar

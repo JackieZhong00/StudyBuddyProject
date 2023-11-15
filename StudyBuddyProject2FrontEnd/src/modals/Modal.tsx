@@ -100,8 +100,8 @@ const Modal: React.FC<ModalProps> = ({
           {/*body*/}
           <div className="relative p-6 flex-auto">{body}</div>
           {/*footer*/}
-          <div className="flex flex-col gap-2 p-6">
-            <button onClick={handleSubmit}>Submit</button>
+          <div className="flex flex-col gap-2 p-6 content-center">
+            <button onClick={handleSubmit} className='bg-blue-400 border-2 rounded-lg p-3 w-[30%] ml-[35%]'>Submit</button>
             {footer}
           </div>
         </div>

@@ -4,7 +4,6 @@ import { z, ZodType } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
 
-// import getUserProfile from '../actions/getUserProfile'
 
 import ReactDatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -28,7 +27,6 @@ type ProfileFormData = {
   enviroPrompt: string
   traitsPrompt: string
   hobbiesPrompt: string
-  // pictureUpload: string
 }
 
 interface UserData {
@@ -60,7 +58,6 @@ function convertToBase64(file: File) {
 }
 
 const Profile = () => {
-  // console.log(currentUser)
   const [image, setImage] = useState({ myFile: '' })
   const [fetchedUserInfo, setFetchedUserInfo] = useState<UserData | {}>({})
 
@@ -72,12 +69,13 @@ const Profile = () => {
       .then((res) => {
         console.log(res.data)
         setFetchedUserInfo(res.data)
+        setImage(res.data.pictureUpload)
       })
       .catch((error) => console.log(error))
   }, [id])
 
   const userInfo = useMemo(() => fetchedUserInfo, [fetchedUserInfo])
-  //this is called upon file upload (onchange func of input element) --> sets image stateValue --> this state value is used in onSubmit func later on
+  //this is called when a file is uploaded (onchange func of input element) --> sets image stateValue --> this state value is used in onSubmit func later on
   const handleFileUpload = async (e) => {
     const file = e.target.files[0]
     const base64 = await convertToBase64(file)
@@ -107,7 +105,7 @@ const Profile = () => {
     control,
     reset,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, dirtyFields, isDirty},
   } = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
     defaultValues: async () => {
@@ -115,10 +113,14 @@ const Profile = () => {
       const data = await response.json()
       console.log(data)
       return {
-        date1: Date.parse(data.dates[0]),
-        date2: Date.parse(data.dates[1]),
-        date3: Date.parse(data.dates[2]),
-        date4: Date.parse(data.dates[3]),
+        // date1: Date.parse(data.dates[0]),
+        // date2: Date.parse(data.dates[1]),
+        // date3: Date.parse(data.dates[2]),
+        // date4: Date.parse(data.dates[3]),
+        date1: new Date(Date.parse(data.dates[0])),
+        date2: new Date(Date.parse(data.dates[1])),
+        date3: new Date(Date.parse(data.dates[2])),
+        date4: new Date(Date.parse(data.dates[3])),
         location1: data.locations[0],
         location2: data.locations[1],
         location3: data.locations[2],
@@ -156,7 +158,7 @@ const Profile = () => {
   ) => {
     console.log({ event })
     const reformattedEvent = {
-      pictureUpload: image.myFile,
+      pictureUpload: image,
       locations: [
         event.location1,
         event.location2,
@@ -177,13 +179,10 @@ const Profile = () => {
         withCredentials: true,
       })
       .then((res) => {
-        // setIsDisabled(!isDisabled)
-        // setFormData(event)
         setFetchedUserInfo(res.data)
         toast.success('Profile Info Submitted!')
         console.log(res)
         reset(event)
-        // window.location.reload()
       })
       .catch((e) => toast.error('There was an error!'))
   }
@@ -192,186 +191,189 @@ const Profile = () => {
   const userProfilePicture =
     image.myFile || fetchedUserInfo.pictureUpload || profile
   return (
-    <div className="flex items-center justify-center h-[90%]">
-      <form
-        className="border-4 border-solid border-black rounded-lg mb-16"
-        onSubmit={handleSubmit(handleSave)}
-      >
-        <div className="p-10">
-          {/* fetch and render name */}
-          <h1>{userInfo?.username}</h1>
-          <h1>{userInfo?.email}</h1>
-        </div>
-        <div className="p-10">
-          <label htmlFor="pictureUpload" className="cursor-pointer">
-            Select a profile picture to upload
-            <img
-              src={userProfilePicture}
-              alt="ProfilePicture"
-              className="w-16 h-16 rounded-xl"
+    <div className="absolute bg-black text-white">
+      <form className="" onSubmit={handleSubmit(handleSave)}>
+        <section className="flex flex-row w-screen justify-center">
+          <div className="p-10">
+            <label htmlFor="pictureUpload" className="cursor-pointer">
+              <img
+                src={userProfilePicture}
+                alt="ProfilePicture"
+                className="w-36 h-36 aspect-auto rounded-full border boreder-solid"
+              />
+            </label>
+            <input
+              type="file"
+              id="pictureUpload"
+              accept=".jpeg, .jpg, .png"
+              className="hidden"
+              name="pictureUpload"
+              onChange={(e) => handleFileUpload(e)}
             />
-          </label>
-          <input
-            type="file"
-            id="pictureUpload"
-            accept=".jpeg, .jpg, .png"
-            className="hidden"
-            name="pictureUpload"
-            // {...register('pictureUpload', {
-            //   onChange: (e) =>{handleFileUpload(e)}
-            // })}
-            // {...register('pictureUpload')}
-            onChange={(e) => handleFileUpload(e)}
-            // {...pictureUpload}
-            // onChange={(e) => {
-            //   pictureUpload.onChange(e)
-            //   handleFileUpload(e)
-            // }}
-          />
-        </div>
-        <div className="p-10">
-          <div className="p-5">
-            <label htmlFor="date" className="form-label">
-              Date
+          </div>
+          <div className="p-10">
+            <h1 className="py-3">Username: {userInfo?.username}</h1>
+            <h1 className="py-3">Email: {userInfo?.email}</h1>
+          </div>
+        </section>
+
+        <div className="flex flex-wrap p-10 mt-10">
+          <div className="w-1/2 p-5">
+            <label htmlFor="date" className="form-label mr-5">
+              Date:
             </label>
             <ReactDatePicker
-              // value={
-              //   fetchedUserInfo &&
-              //   fetchedUserInfo.dates &&
-              //   fetchedUserInfo?.dates[0].slice(
-              //     0,
-              //     fetchedUserInfo.dates[0].indexOf('T')
-              //   )
-              // }
               id="date1"
               name="date1"
               selected={date1.value}
               onChange={(date) => handleDateChange('date1', date)}
-              className=""
+              className="border border-solid border-white rounded-md p-1 mr-10 bg-black"
             />
-            <label htmlFor="location1">Location</label>
+            <label htmlFor="location1" className="mr-5">
+              Location:
+            </label>
             <input
+              className="border border-solid border-white bg-black rounded-md p-1"
               type="text"
-              //   placeholder="Starbucks"
               id="location1"
               {...register('location1')}
             />
           </div>
-          <div className="p-5">
-            <label htmlFor="date2" className="form-label">
-              Date
+          <div className="w-1/2 p-5">
+            <label htmlFor="date2" className="form-label mr-5">
+              Date:
             </label>
             <ReactDatePicker
               id="date2"
               name="date2"
               selected={date2.value}
               onChange={(date) => handleDateChange('date2', date)}
-              className=""
+              className="border border-solid border-white bg-black rounded-md p-1 mr-10"
             />
-            <label htmlFor="location2">Location</label>
+            <label htmlFor="location2" className="mr-5">
+              Location:
+            </label>
             <input
+              className="border border-solid border-white bg-black rounded-md p-1"
               type="text"
               id="location2"
               {...register('location2')}
             />
           </div>
-          <div className="p-5">
-            <label htmlFor="date" className="form-label">
-              Date
+          <div className="w-1/2 p-5">
+            <label htmlFor="date" className="form-label mr-5">
+              Date:
             </label>
             <ReactDatePicker
               id="date3"
               name="date3"
               selected={date3.value}
               onChange={(date) => handleDateChange('date3', date)}
-              className=""
+              className="border border-solid border-white bg-black rounded-md p-1 mr-10"
             />
-            <label htmlFor="location3">Location</label>
+            <label htmlFor="location3" className="mr-5">
+              Location:
+            </label>
             <input
+              className="border border-solid border-white bg-black rounded-md p-1"
               type="text"
               id="location3"
               {...register('location3')}
             />
           </div>
-          <div className="p-5">
-            <label htmlFor="date" className="form-label">
-              Date
+          <div className="w-1/2 p-5">
+            <label htmlFor="date" className="form-label mr-5">
+              Date:
             </label>
             <ReactDatePicker
               id="date4"
               name="date4"
               selected={date4.value}
               onChange={(date) => handleDateChange('date4', date)}
-              className=""
+              className="border border-solid border-white bg-black rounded-md p-1 mr-10"
             />
-            <label htmlFor="location4">Location</label>
+            <label htmlFor="location4" className="mr-5">
+              Location:
+            </label>
             <input
+              className="border border-solid border-white bg-black rounded-md p-1"
               type="text"
               id="location4"
               {...register('location4')}
             />
           </div>
         </div>
-        <div className="p-10">
-          <label htmlFor="contactInfo">
-            My instagram handle/email/number is...
-          </label>
-          <input
-            type="text"
-            id="contactInfo"
-            {...register('contactInfo')}
-          />
-        </div>
-        <div className="p-10">
-          <label htmlFor="careerPrompt">
-            What are your career aspirations?
-          </label>
-          <input
-            // defaultValue={
-            //   fetchedUserInfo &&
-            //   fetchedUserInfo.promptResponses &&
-            //   fetchedUserInfo?.promptResponses[0]
-            // }
-            type="text"
-            id="careerPrompt"
-            {...register('careerPrompt')}
-          />
-        </div>
-        <div className="p-10">
-          <label htmlFor="enviroPrompt">
-            What is your ideal study environment?
-          </label>
-          <input
-            type="text"
-            id="enviroPrompt"
-            {...register('enviroPrompt')}
-          />
-        </div>
-        <div className="p-10">
-          <label htmlFor="traitsPrompt">
-            What are 3 traits you're looking for in a study buddy?
-          </label>
-          <input
-            type="text"
-            id="traitsPrompt"
-            {...register('traitsPrompt')}
-          />
-        </div>
-        <div className="p-10">
-          <label htmlFor="hobbiesPrompt">
-            Outside of studying/working, what do you like to do for fun?
-          </label>
-          <input
-            type="text"
-            id="hobbiesPrompt"
-            {...register('hobbiesPrompt')}
-          />
-        </div>
-        <button type="submit" className="ml-80">
-          Submit
-        </button>
+        <section className="">
+          <div className="p-10">
+            <label htmlFor="contactInfo">
+              My instagram handle/email/number is...
+            </label>
+            <textarea
+              rows="5"
+              cols="50"
+              id="contactInfo"
+              className="border border-solid border-white rounded-md bg-black block"
+              {...register('contactInfo')}
+            />
+          </div>
+          <div className="p-10">
+            <label htmlFor="careerPrompt" className=''>
+              What are your career aspirations?
+            </label>
+            <textarea
+              rows="5"
+              cols="50"
+              id="careerPrompt"
+              className="border border-solid border-white rounded-md bg-black block"
+              {...register('careerPrompt')}
+            />
+          </div>
+          <div className="p-10">
+            <label htmlFor="enviroPrompt">
+              What is your ideal study environment?
+            </label>
+            <textarea
+              rows="5"
+              cols="50"
+              id="enviroPrompt"
+              className="border border-solid border-white rounded-md bg-black block"
+              {...register('enviroPrompt')}
+            />
+          </div>
+          <div className="p-10">
+            <label htmlFor="traitsPrompt">
+              What are 3 traits you're looking for in a study buddy?
+            </label>
+            <textarea
+              rows="5"
+              cols="50"
+              id="traitsPrompt"
+              className="border border-solid border-white rounded-md bg-black block"
+              {...register('traitsPrompt')}
+            />
+          </div>
+          <div className="p-10">
+            <label htmlFor="hobbiesPrompt">
+              Outside of studying/working, what do you like to do for fun?
+            </label>
+            <textarea
+              rows="5"
+              cols="50"
+              id="hobbiesPrompt"
+              className="border border-solid border-white rounded-md bg-black block"
+              {...register('hobbiesPrompt')}
+            />
+          </div>
+          <div className="flex flex-row justify-center mb-10">
+            <button type="submit" className="border border-solid border-white rounded-md py-3 px-10 bg-blue-500 text-xl font-bold">
+              Submit
+            </button>
+          </div>
+        </section>
       </form>
-      <Navbar />
+      <div className="fixed top-10 flex-col justify-center align-middle ml-10 h-full">
+        <Navbar />
+      </div>
     </div>
   )
 }

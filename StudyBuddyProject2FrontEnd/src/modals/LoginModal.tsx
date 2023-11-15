@@ -48,32 +48,38 @@ const LoginModal = () => {
   }
 
   const body = (
-    <form>
-      <div className="">
-        <label htmlFor="email">Email</label>
+    <form className="flex flex-col justify-items-center">
+      <div className="mb-3">
+        <label htmlFor="email" className="mr-16">
+          Email
+        </label>
         <input
           id="email"
           placeholder="email"
           type="text"
+          className="border-2 border-gray-500 rounded-md w-[80%] p-1"
           {...register('email')}
         />
       </div>
       <div className="">
-        <label htmlFor="password">Password</label>
+        <label htmlFor="password" className="mr-8">
+          Password
+        </label>
         <input
           id="password"
           placeholder="password"
           type="password"
-          {...register('password')}
+          className="border-2 border-gray-500 rounded-md w-[80%] p-1"
+          {...register('password')} 
         />
       </div>
     </form>
   )
 
   const footer = (
-    <div className="">
-      <span>First time using Study Buddy?</span>
-      <button onClick={toggleModal}>Create Account</button>
+    <div className="flex flex-col">
+      <h3 className='pl-[32%]'>First time using Study Buddy?</h3>
+      <button className='text-blue-500' onClick={toggleModal}>Create Account</button>
     </div>
   )
 

@@ -69,65 +69,34 @@ const Explore = () => {
     window.localStorage.setItem('shownUsers', JSON.stringify(shownUsers))
   }, [shownUsers])
 
-  // useEffect(() => {
-  //   axios
-  //     .get('http://localhost:8080/users', { withCredentials: true })
-  //     .then((res) => {
-  //       window.localStorage.setItem('users', JSON.stringify(res.data))
-  //       setDbFetch(true)
-  //     })
-  //     .catch((e) => console.log(e))
-  // }, [dbFetch])
 
-  // useEffect(() => {
-  //   const fetchedUsers = window.localStorage.getItem('users')
-  //   if (fetchedUsers) {
-  //     try {
-  //       const parsedUsers = JSON.parse(fetchedUsers)
-  //       setAllUsers(parsedUsers)
-  //     } catch (error) {
-  //       console.error('Error parsing storedShownUsers:', error)
-  //     }
-  //   }
-  // }, [])
-
-  // const nextUserIndex = () => {
-  //   const newUsersList = allUsers.slice(1)
-  //   window.localStorage.setItem('users', JSON.stringify(newUsersList))
-  //   setCurrentIndex((prev) => prev + 1)
-  // }
-
-  // useEffect(() => {
-  //   if (allUsers.length > 0) {
-  //     setCurrentUser(allUsers[currentIndex])
-  //   }
-  // }, [currentIndex, allUsers])
-
-  // console.log(allUsers)
 
   return (
-    <>
+    <section className="bg-black h-full -mt-5">
       <button
         onClick={nextUserIndex}
         disabled={currentIndex === allUsers.length - 1}
-        className=" border border-black border-solid rounded-xl bg-white text-blue-700 fixed top-96 left-36 p-5"
+        className=" border border-black border-solid rounded-xl bg-white text-blue-700 fixed top-[50%] right-[5%] p-5"
       >
-        Show Next User
+        Next
       </button>
+      <section className="flex justify-center pt-20 -mb-16">
+        <h1 className="text-7xl text-white">Study Buddy</h1>
+      </section>
       <div className="flex items-center justify-center h-screen">
         {/* {allUsers.map((user) => {
           return ( */}
         {currentUser && (
-          <div className=" border border-solid border-black w-3/5 h-4/5 rounded bg-slate-600 relative overflow-y-auto">
-            <div className="absolute border border-solid border-black w-28 h-28 bg-pink-700 top-10 left-20 rounded-full">
+          <div className="border border-solid border-white w-[70%] h-[70%] rounded bg-white-700 relative overflow-y-auto">
+            <div className="absolute border border-solid border-white w-40 h-40 bg-pink-700 top-10 left-20 rounded-full overflow-hidden">
               <img
                 src={currentUser.pictureUpload}
-                className="border border-solid border-black w-28 h-28 bg-pink-700 top-10 left-20 rounded-full"
+                className="border border-solid border-black aspect-square bg-pink-700 top-10 left-20 rounded-full"
               />
             </div>
 
             {/* <div className="xl:w-7/12 h-36 border border-solid bg-pink-700 rounded-lg absolute top-8 left-64 lg:w-2/4 md:w-2/5 sm:w-1/3"></div> */}
-            <div className="flex justify-between h-44 w-8/12 absolute top-8 left-1/4 ">
+            <div className="flex justify-between h-44 w-[60%] absolute top-8 left-1/4 ">
               {
                 <LocationDateCard
                   date={currentUser.dates[0]?.toString()?.split('T')[0]}
@@ -157,7 +126,7 @@ const Explore = () => {
                 />
               }
             </div>
-            <div className="flex flex-col space-y-4 absolute top-52 left-20 w-full">
+            <div className="flex flex-col space-y-4 absolute top-52 left-20 w-full mt-10">
               <div
                 className="bg-white border 
             border-solid border-black 
@@ -206,11 +175,6 @@ const Explore = () => {
                 </label>
                 <hr className="border-t-2 border-black"></hr>
 
-                {/* <input
-                id="traits-prompt"
-                type="text"
-                className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
-              /> */}
                 <input defaultValue={currentUser.promptResponses[3]} readOnly />
               </div>
               <div
@@ -223,28 +187,19 @@ const Explore = () => {
                   Outside of studying/working, what do you like to do for fun?
                 </label>
                 <hr className="border-t-2 border-black"></hr>
-                {/* <input
-                id="hobbies-prompt"
-                type="text"
-                className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
-              /> */}
-                {/* <textarea
-                  rows={3}
-                  cols={45}
-                  id="hobbies-prompt"
-                  className="bg-white border border-solid border-black w-full h-full rounded-b-lg"
-                /> */}
+
                 <input defaultValue={currentUser.promptResponses[4]} readOnly />
               </div>
             </div>
           </div>
         )}
 
-        {/* )
-        })} */}
+        
       </div>
-      <Navbar />
-    </>
+      <div className="fixed top-10 flex-col justify-center align-middle ml-10 h-full">
+        <Navbar />
+      </div>
+    </section>
   )
 }
 export default Explore
