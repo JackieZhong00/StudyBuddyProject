@@ -6,8 +6,10 @@ import compression from 'compression'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import router from '../router'
+import path from 'path'; // Add this line
 
-require('dotenv').config()
+require('dotenv').config(({ path: path.join(__dirname, '..', 'vars', '.env') }));
+
 const port = process.env.PORT || 8080
 
 const app = express()
