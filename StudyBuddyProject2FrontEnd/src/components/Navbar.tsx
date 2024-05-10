@@ -4,12 +4,10 @@ import search from '../images/search.jpg'
 import { useParams } from 'react-router-dom'
 
 
-interface UseParams {
-  id: string
-}
+
 
 const Navbar = () => {
-  const { id } = useParams<UseParams>()
+  const { id } = useParams()
   return (
     <div className="">
       <a className="px-16" href={`/explore/${id}`}>

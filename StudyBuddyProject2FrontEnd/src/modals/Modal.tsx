@@ -8,6 +8,7 @@ interface ModalProps {
   isOpen?: boolean
   onClose: () => void,
   onSubmit: () => void
+  isAuthorized: boolean
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -17,6 +18,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   footer,
   onSubmit,
+  isAuthorized
 }) => {
   const [showModal, setShowModal] = useState(isOpen)
   
@@ -98,10 +100,17 @@ const Modal: React.FC<ModalProps> = ({
             <div className="text-lg font-semibold">{title}</div>
           </div>
           {/*body*/}
+
           <div className="relative p-6 flex-auto">{body}</div>
+          {!isAuthorized ? <p className='flex justify-center text-red-500'>Login Credentials are invalid</p> : <div></div>}
           {/*footer*/}
           <div className="flex flex-col gap-2 p-6 content-center">
-            <button onClick={handleSubmit} className='bg-blue-400 border-2 rounded-lg p-3 w-[30%] ml-[35%]'>Submit</button>
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-400 border-2 rounded-lg p-3 w-[30%] ml-[35%]"
+            >
+              Submit
+            </button>
             {footer}
           </div>
         </div>

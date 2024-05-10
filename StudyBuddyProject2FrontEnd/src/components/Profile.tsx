@@ -61,7 +61,7 @@ const Profile = () => {
   const [image, setImage] = useState({ myFile: '' })
   const [fetchedUserInfo, setFetchedUserInfo] = useState<UserData | {}>({})
 
-  const { id } = useParams<UseParams>()
+  const { id } = useParams()
 
   useEffect(() => {
     axios
@@ -113,10 +113,6 @@ const Profile = () => {
       const data = await response.json()
       console.log(data)
       return {
-        // date1: Date.parse(data.dates[0]),
-        // date2: Date.parse(data.dates[1]),
-        // date3: Date.parse(data.dates[2]),
-        // date4: Date.parse(data.dates[3]),
         date1: new Date(Date.parse(data.dates[0])),
         date2: new Date(Date.parse(data.dates[1])),
         date3: new Date(Date.parse(data.dates[2])),
@@ -309,8 +305,8 @@ const Profile = () => {
               My instagram handle/email/number is...
             </label>
             <textarea
-              rows="5"
-              cols="50"
+              rows={5}
+              cols={50}
               id="contactInfo"
               className="border border-solid border-white rounded-md bg-black block"
               {...register('contactInfo')}
@@ -321,8 +317,8 @@ const Profile = () => {
               What are your career aspirations?
             </label>
             <textarea
-              rows="5"
-              cols="50"
+              rows={5}
+              cols={50}
               id="careerPrompt"
               className="border border-solid border-white rounded-md bg-black block"
               {...register('careerPrompt')}
@@ -333,8 +329,8 @@ const Profile = () => {
               What is your ideal study environment?
             </label>
             <textarea
-              rows="5"
-              cols="50"
+              rows={5}
+              cols={50}
               id="enviroPrompt"
               className="border border-solid border-white rounded-md bg-black block"
               {...register('enviroPrompt')}
@@ -345,8 +341,8 @@ const Profile = () => {
               What are 3 traits you're looking for in a study buddy?
             </label>
             <textarea
-              rows="5"
-              cols="50"
+              rows={5}
+              cols={50}
               id="traitsPrompt"
               className="border border-solid border-white rounded-md bg-black block"
               {...register('traitsPrompt')}
@@ -357,8 +353,8 @@ const Profile = () => {
               Outside of studying/working, what do you like to do for fun?
             </label>
             <textarea
-              rows="5"
-              cols="50"
+              rows={2}
+              cols={50}
               id="hobbiesPrompt"
               className="border border-solid border-white rounded-md bg-black block"
               {...register('hobbiesPrompt')}

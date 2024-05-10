@@ -20,7 +20,7 @@ function App() {
           <Route path="/calendar/:id" element={<Calendar />} />
         </Routes>
       </Router>
-      <Toaster position='top-center'/>
+      <Toaster position="top-center" />
     </>
   )
 }

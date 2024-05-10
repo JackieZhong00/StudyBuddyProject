@@ -1,4 +1,4 @@
-import { useCallback} from 'react'
+import { useCallback, useState} from 'react'
 import useLoginModal from '../hooks/useLoginModal'
 import useRegisterModal from '../hooks/useRegisterModal'
 import Modal from './Modal'
@@ -14,7 +14,7 @@ type loginInfo = {
 const LoginModal = () => {
   const loginModal = useLoginModal()
   const registerModal = useRegisterModal()
-  // const [loginData, setLoginData] = useState({})
+  const [isAuthorized,setIsAuthorized] = useState(true)
   
 
   const toggleModal = useCallback(() => {
@@ -43,6 +43,7 @@ const LoginModal = () => {
       loginModal.onClose()
       window.location.href = `/profile/${response.data._id}`
     } catch (error) {
+      setIsAuthorized(false)
       console.log(error)
     }
   }
@@ -89,6 +90,7 @@ const LoginModal = () => {
       isOpen={loginModal.isOpen}
       onClose={loginModal.onClose}
       onSubmit={handleSubmit(onSubmit)}
+      isAuthorized={isAuthorized}
       body={body}
       footer={footer}
     />
