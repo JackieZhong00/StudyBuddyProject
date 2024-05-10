@@ -100,6 +100,7 @@ const RegisterModal = () => {
       onSubmit={handleSubmit(onSubmit)}
       body={body}
       footer={footer}
+      isAuthorized={true}
     />
   )
 }

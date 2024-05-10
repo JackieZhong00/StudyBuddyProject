@@ -104,13 +104,13 @@ export const saveEvent = async (
 ) => {
   try {
     const { id } = req.params
-    const { savedEvent } = req.body
-    if (!savedEvent) {
+    const { savedEvents } = req.body
+    if (!savedEvents) {
       console.log('no events saved')
     }
     const user = await getUserById(id)
     if (user) {
-      user.savedEvents.push(savedEvent)
+      user.savedEvents.push(savedEvents)
       await user.save()
     }
     return res.status(200).json(user).end()
