@@ -8,9 +8,9 @@ import {
 } from '@syncfusion/ej2-react-schedule'
 import Navbar from './Navbar'
 import { useParams } from 'react-router-dom'
-import { UseParams } from '../types'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+
 
 interface SavedEvents {
   location: string
@@ -24,9 +24,10 @@ interface TransformedEvent {
 }
 
 const Calendar = () => {
-  const { id } = useParams<UseParams>()
+  const { id } = useParams()
   const [savedEvents, setSavedEvents] = useState([])
 
+  //fetch all events assoc w/ user
   useEffect(() => {
     axios
       .get(`http://localhost:8080/users/${id}`, { withCredentials: true })
@@ -34,18 +35,25 @@ const Calendar = () => {
       .catch((e) => console.log(e))
   }, [])
 
- 
+ console.log(savedEvents)
 
+//function used to reformat event data for the calendar to present
   const transformEvents = (events: SavedEvents[]): TransformedEvent[] => {
+    for(let i = 0; i < events.length; i++) {
+      if (events[i] == null) {
+        const todaysDate = new Date()
+        events[i] = {location: "no events chosen", date: todaysDate.toString()}
+      }
+    }
     return events.map((event) => {
       const currentDate = new Date(event.date)
       const endDate = new Date(event.date)
       endDate.setDate(endDate.getDate() + 1)
-
+      const eventLocation = "no events chosen"
       return {
         EndTime: endDate.toISOString().split('T')[0],
         StartTime: currentDate.toISOString().split('T')[0],
-        Subject: event.location,
+        Subject: eventLocation,
       }
     })
   }
@@ -54,7 +62,7 @@ const Calendar = () => {
     dataSource: transformEvents(savedEvents),
   }
 
-  console.log(savedEvents)
+
 
   return (
     <section className="bg-pink-300">

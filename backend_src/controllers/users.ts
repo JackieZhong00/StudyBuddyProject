@@ -110,7 +110,7 @@ export const saveEvent = async (
     }
     const user = await getUserById(id)
     if (user) {
-      user.savedEvents.push(savedEvents)
+      user.savedEvents?.push(savedEvents)
       await user.save()
     }
     return res.status(200).json(user).end()

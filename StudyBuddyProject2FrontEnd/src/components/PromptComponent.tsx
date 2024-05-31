@@ -1,24 +1,25 @@
-import { ProfileFormData } from "./Profile"
-import { useForm, SubmitHandler, useController } from 'react-hook-form'
+import { useFormContext} from 'react-hook-form'
 
 type PromptComponentProp = {
+  name: string
   label: string
-  register: UseFormRegister<ProfileFormData>
+  defaultValue: string
 }
 
-export const PromptComponent = ({label, register}: PromptComponentProp) => {
-
+export const PromptComponent = ({name, label, defaultValue}: PromptComponentProp) => {
+    const { register } = useFormContext()
   return (
-    <div className="p-10">
-      <label htmlFor="hobbiesPrompt">
-        Outside of studying/working, what do you like to do for fun?
+    <div className="p-10 inline-block w-1/2">
+      <label htmlFor={name}>
+        {label}
       </label>
       <textarea
-        rows={2}
+        rows={5}
         cols={50}
-        id="hobbiesPrompt"
+        id={name}
+        defaultValue = {defaultValue}
         className="border border-solid border-white rounded-md bg-white block"
-        {...register('hobbiesPrompt')}
+        {...register(name)}
       />
     </div>
   )

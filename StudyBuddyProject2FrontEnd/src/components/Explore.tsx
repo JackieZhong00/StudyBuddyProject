@@ -5,15 +5,7 @@ import LocationDateCard from './LocationDateCard'
 import { useParams } from 'react-router-dom'
 
 import { ProfileCard } from './ProfileCard'
-
-interface currentUser {
-  username: string
-  pictureUpload: string
-  locations: string[]
-  dates: string[]
-  promptResponses: string[]
-  _id: string
-}
+import type { currentUser } from '..'
 
 const Explore = () => {
   const [allUsers, setAllUsers] = useState([])

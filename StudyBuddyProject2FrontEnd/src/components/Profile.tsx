@@ -1,46 +1,17 @@
-import { useForm, SubmitHandler, useController } from 'react-hook-form'
+import { useForm, FormProvider, SubmitHandler } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z, ZodType } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import toast from 'react-hot-toast'
-
-
-import ReactDatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
 import profile from '../images/profile.jpg'
 
 import axios from 'axios'
 import Navbar from './Navbar'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PromptComponent } from './PromptComponent'
-
-export type ProfileFormData = {
-  date1: Date
-  date2: Date
-  date3: Date
-  date4: Date
-  location1: string
-  location2: string
-  location3: string
-  location4: string
-  contactInfo: string
-  careerPrompt: string
-  enviroPrompt: string
-  traitsPrompt: string
-  hobbiesPrompt: string
-}
-
-type UserData = {
-  email: string
-  username: string
-  dates: Date[]
-  locations: string[]
-  contactInfo: string
-  promptResponses: string[]
-  pictureUpload: string
-  _id: string
-}
-
+import { DatePromptComponent } from './DatePromptComponent'
+import { LocationComponent } from './LocationComponent'
+import type { UserData, ProfileFormData } from '..'
 
 
 function convertToBase64(file: File) {
@@ -58,7 +29,17 @@ function convertToBase64(file: File) {
 
 const Profile = () => {
   const [image, setImage] = useState({ myFile: '' })
-  const [fetchedUserInfo, setFetchedUserInfo] = useState<UserData | {}>({})
+  const [fetchedUserInfo, setFetchedUserInfo] = useState<UserData>({
+    email: "",
+    username: "",
+    dates: [new Date],
+    locations: [""],
+    contactInfo: "",
+    promptResponses: [""],
+    pictureUpload: "",
+    _id: ""
+
+  })
 
   const { id } = useParams()
 
@@ -99,17 +80,13 @@ const Profile = () => {
     hobbiesPrompt: z.string().max(250),
   })
 
-  const {
-    register,
-    control,
-    reset,
-    handleSubmit,
-    setError,
-    formState: { isSubmitting },
-  } = useForm<ProfileFormData>({
+  const methods = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
     defaultValues: async () => {
-      const response = await fetch(`http://localhost:8080/users/${id}`, {method: "GET", "credentials": "include"})
+      const response = await fetch(`http://localhost:8080/users/${id}`, {
+        method: 'GET',
+        credentials: 'include',
+      })
       const data = await response.json()
       console.log(data)
       return {
@@ -131,22 +108,9 @@ const Profile = () => {
   })
 
 
-  const { field: date1 } = useController({ name: 'date1', control })
-  const { field: date2 } = useController({ name: 'date2', control })
-  const { field: date3 } = useController({ name: 'date3', control })
-  const { field: date4 } = useController({ name: 'date4', control })
-
-  const handleDateChange = useCallback((name: string, option: Date | null) => {
-    if (name === 'date1') {
-      date1.onChange(option)
-    } else if (name === 'date2') {
-      date2.onChange(option)
-    } else if (name === 'date3') {
-      date3.onChange(option)
-    } else {
-      date4.onChange(option)
-    }
-  }, [])
+  const {
+    reset
+  } = useForm<ProfileFormData>()
 
   //function that is passed to handlesubmit, designating it as func that handles form submission
   const handleSave: SubmitHandler<ProfileFormData> = async (
@@ -187,195 +151,169 @@ const Profile = () => {
   const userProfilePicture =
     image.myFile || fetchedUserInfo.pictureUpload || profile
   return (
-    <div className="absolute bg-pink-300 ">
-      <form className="" onSubmit={handleSubmit(handleSave)}>
-        <section className="flex flex-row w-screen justify-center">
-          <div className="p-10">
-            <label htmlFor="pictureUpload" className="cursor-pointer">
-              <img
-                src={userProfilePicture}
-                alt="ProfilePicture"
-                className="w-36 h-36 aspect-auto rounded-full border boreder-solid"
+    <FormProvider {...methods}>
+      <div className="absolute bg-pink-300 ">
+        <form className="" onSubmit={methods.handleSubmit(handleSave)}>
+          <section className="flex flex-row w-screen justify-center">
+            <div className="p-10">
+              <label htmlFor="pictureUpload" className="cursor-pointer">
+                <img
+                  src={userProfilePicture}
+                  alt="ProfilePicture"
+                  className="w-36 h-36 aspect-auto rounded-full border boreder-solid"
+                />
+              </label>
+              <input
+                type="file"
+                id="pictureUpload"
+                accept=".jpeg, .jpg, .png"
+                className="hidden"
+                name="pictureUpload"
+                onChange={(e) => handleFileUpload(e)}
               />
-            </label>
-            <input
-              type="file"
-              id="pictureUpload"
-              accept=".jpeg, .jpg, .png"
-              className="hidden"
-              name="pictureUpload"
-              onChange={(e) => handleFileUpload(e)}
-            />
-          </div>
-          <div className="p-10">
-            <h1 className="py-3">Username: {userInfo?.username}</h1>
-            <h1 className="py-3">Email: {userInfo?.email}</h1>
-          </div>
-        </section>
+            </div>
+            <div className="p-10">
+              <h1 className="py-3">Username: {userInfo?.username}</h1>
+              <h1 className="py-3">Email: {userInfo?.email}</h1>
+            </div>
+          </section>
 
-        <div className="flex flex-wrap p-10 mt-10">
-          <div className="w-1/2 p-5">
-            <label htmlFor="date" className="form-label mr-5">
-              Date:
-            </label>
-            <ReactDatePicker
-              id="date1"
-              name="date1"
-              selected={date1.value}
-              onChange={(date) => handleDateChange('date1', date)}
-              className="border border-solid border-black rounded-md p-1 mr-10 bg-white"
-            />
-            <label htmlFor="location1" className="mr-5">
-              Location:
-            </label>
-            <input
-              className="border border-solid border-white bg-white rounded-md p-1"
-              type="text"
-              id="location1"
-              {...register('location1')}
-            />
+          <div className="flex flex-wrap p-10 mt-10">
+            <div className="w-1/2 p-5">
+              <DatePromptComponent
+                dateLabel={'date1'}
+                defaultDate={userInfo.dates[0]}
+              />
+              <LocationComponent
+                label={'location1'}
+                defaultValue={userInfo.locations[0]}
+              />
+              {methods.formState.errors.location1 && (
+                <p className="text-red-500">
+                  You've surpassed the 150 character limit
+                </p>
+              )}
+            </div>
+            <div className="w-1/2 p-5">
+              <DatePromptComponent
+                dateLabel={'date2'}
+                defaultDate={userInfo.dates[1]}
+              />
+              <LocationComponent
+                label={'location2'}
+                defaultValue={userInfo.locations[1]}
+              />
+              {methods.formState.errors.location2 && (
+                <p className="text-red-500">
+                  You've surpassed the 150 character limit
+                </p>
+              )}
+            </div>
+            <div className="w-1/2 p-5">
+              <DatePromptComponent
+                dateLabel={'date3'}
+                defaultDate={userInfo.dates[2]}
+              />
+              {methods.formState.errors.date3 && (
+                <p className="text-red-500">Please input a valid date</p>
+              )}
+              <LocationComponent
+                label={'location3'}
+                defaultValue={userInfo.locations[2]}
+              />
+              {methods.formState.errors.location3 && (
+                <p className="text-red-500">
+                  You've surpassed the 150 character limit
+                </p>
+              )}
+            </div>
+            <div className="w-1/2 p-5">
+              <DatePromptComponent
+                dateLabel={'date4'}
+                defaultDate={userInfo.dates[3]}
+              />
+              <LocationComponent
+                label={'location4'}
+                defaultValue={userInfo.locations[3]}
+              />
+              {methods.formState.errors.location4 && (
+                <p className="text-red-500">
+                  You've surpassed the 150 character limit
+                </p>
+              )}
+            </div>
           </div>
-          <div className="w-1/2 p-5">
-            <label htmlFor="date2" className="form-label mr-5">
-              Date:
-            </label>
-            <ReactDatePicker
-              id="date2"
-              name="date2"
-              selected={date2.value}
-              onChange={(date) => handleDateChange('date2', date)}
-              className="border border-solid border-black rounded-md p-1 mr-10 bg-white "
+          <section className="">
+            <div>
+              <PromptComponent
+                name={'contactInfo'}
+                label={'What is your email/ig handle?'}
+                defaultValue={userInfo?.promptResponses[0]}
+              />
+              {methods.formState.errors.contactInfo && (
+                <p className="text-red-500">
+                  You've surpassed the 150 character limit
+                </p>
+              )}
+              <PromptComponent
+                name={'careerPrompt'}
+                label={'What are your career aspirations?'}
+                defaultValue={userInfo?.promptResponses[1]}
+              />
+              {methods.formState.errors.careerPrompt && (
+                <p className="text-red-500">
+                  You've surpassed the 150 character limit
+                </p>
+              )}
+            </div>
+            <PromptComponent
+              name={'enviroPrompt'}
+              label={'What is your ideal study environment?'}
+              defaultValue={userInfo?.promptResponses[2]}
             />
-            <label htmlFor="location2" className="mr-5">
-              Location:
-            </label>
-            <input
-              className="border border-solid border-black bg-white text-black rounded-md p-1"
-              type="text"
-              id="location2"
-              {...register('location2')}
+            {methods.formState.errors.enviroPrompt && (
+              <p className="text-red-500">
+                You've surpassed the 150 character limit
+              </p>
+            )}
+            <PromptComponent
+              name={'traitsPrompt'}
+              label={'What are 3 traits you look for in a study buddy?'}
+              defaultValue={userInfo?.promptResponses[3]}
             />
-          </div>
-          <div className="w-1/2 p-5">
-            <label htmlFor="date" className="form-label mr-5">
-              Date:
-            </label>
-            <ReactDatePicker
-              id="date3"
-              name="date3"
-              selected={date3.value}
-              onChange={(date) => handleDateChange('date3', date)}
-              className="border border-solid border-black rounded-md p-1 mr-10 bg-white text-black"
+            {methods.formState.errors.traitsPrompt && (
+              <p className="text-red-500">
+                You've surpassed the 150 character limit
+              </p>
+            )}
+            <PromptComponent
+              name={'hobbiesPrompt'}
+              label={
+                'Outside of studying/working, what do you like to do for fun?'
+              }
+              defaultValue={userInfo?.promptResponses[3]}
             />
-            <label htmlFor="location3" className="mr-5">
-              Location:
-            </label>
-            <input
-              className="border border-solid border-black bg-white text-black rounded-md p-1"
-              type="text"
-              id="location3"
-              {...register('location3')}
-            />
-          </div>
-          <div className="w-1/2 p-5">
-            <label htmlFor="date" className="form-label mr-5">
-              Date:
-            </label>
-            <ReactDatePicker
-              id="date4"
-              name="date4"
-              selected={date4.value}
-              onChange={(date) => handleDateChange('date4', date)}
-              className="border border-solid border-black rounded-md p-1 mr-10 bg-white text-black"
-            />
-            <label htmlFor="location4" className="mr-5">
-              Location:
-            </label>
-            <input
-              className="border border-solid border-black bg-white rounded-md p-1"
-              type="text"
-              id="location4"
-              {...register('location4')}
-            />
-          </div>
+            {methods.formState.errors.hobbiesPrompt && (
+              <p className="text-red-500">
+                You've surpassed the 150 character limit
+              </p>
+            )}
+            <div className="flex flex-row justify-center mb-10">
+              <button
+                type="submit"
+                disabled={methods.formState.isSubmitting}
+                className="border border-solid border-white rounded-md py-3 px-10 bg-blue-500 text-white text-xl font-bold"
+              >
+                {methods.formState.isSubmitting ? 'Loading' : 'Submit'}
+              </button>
+            </div>
+          </section>
+        </form>
+        <div className="fixed top-10 flex-col justify-center align-middle ml-10 h-full">
+          <Navbar />
         </div>
-        <section className="">
-          <div className="p-10">
-            <label htmlFor="contactInfo">
-              My instagram handle/email/number is...
-            </label>
-            <textarea
-              rows={5}
-              cols={50}
-              id="contactInfo"
-              className="border border-solid border-white rounded-md bg-white block"
-              {...register('contactInfo')}
-            />
-          </div>
-          <div className="p-10">
-            <label htmlFor="careerPrompt" className="">
-              What are your career aspirations?
-            </label>
-            <textarea
-              rows={5}
-              cols={50}
-              id="careerPrompt"
-              className="border border-solid border-white rounded-md bg-white block"
-              {...register('careerPrompt')}
-            />
-          </div>
-          <div className="p-10">
-            <label htmlFor="enviroPrompt">
-              What is your ideal study environment?
-            </label>
-            <textarea
-              rows={5}
-              cols={50}
-              id="enviroPrompt"
-              className="border border-solid border-white rounded-md bg-white block"
-              {...register('enviroPrompt')}
-            />
-          </div>
-          <div className="p-10">
-            <label htmlFor="traitsPrompt">
-              What are 3 traits you're looking for in a study buddy?
-            </label>
-            <textarea
-              rows={5}
-              cols={50}
-              id="traitsPrompt"
-              className="border border-solid border-white rounded-md bg-white block"
-              {...register('traitsPrompt')}
-            />
-          </div>
-          <div className="p-10">
-            <label htmlFor="hobbiesPrompt">
-              Outside of studying/working, what do you like to do for fun?
-            </label>
-            <textarea
-              rows={2}
-              cols={50}
-              id="hobbiesPrompt"
-              className="border border-solid border-white rounded-md bg-white block"
-              {...register('hobbiesPrompt')}
-            />
-          </div>
-          <PromptComponent label={"a"} register={register}/>
-          <div className="flex flex-row justify-center mb-10">
-            <button
-              type="submit"
-              disabled = {isSubmitting}
-              className="border border-solid border-white rounded-md py-3 px-10 bg-blue-500 text-white text-xl font-bold"
-            >
-              {isSubmitting ? "Loading" : "Submit" }
-            </button>
-          </div>
-        </section>
-      </form>
-      <div className="fixed top-10 flex-col justify-center align-middle ml-10 h-full">
-        <Navbar />
       </div>
-    </div>
+    </FormProvider>
   )
 }
 export default Profile
