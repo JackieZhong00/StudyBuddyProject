@@ -25,7 +25,6 @@ const LoginModal = () => {
   const {
     handleSubmit,
     register,
-    // formState: { errors },
   } = useForm<loginInfo>({
     defaultValues: {
       email: '',
@@ -44,7 +43,6 @@ const LoginModal = () => {
       window.location.href = `/profile/${response.data._id}`
     } catch (error) {
       setIsAuthorized(false)
-      console.log(error)
     }
   }
 
@@ -71,7 +69,7 @@ const LoginModal = () => {
           placeholder="password"
           type="password"
           className="border-2 border-gray-500 rounded-md w-[80%] p-1"
-          {...register('password')} 
+          {...register('password')}
         />
       </div>
     </form>

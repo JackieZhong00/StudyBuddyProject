@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import useLoginModal from '../hooks/useLoginModal'
 import useRegisterModal from '../hooks/useRegisterModal'
 import Modal from './Modal'
@@ -15,12 +15,10 @@ type registerInfo = {
   preventDefault: () => void
 }
 
-// interface LoginModalProps {
-//   modalState: boolean
-// }
+
 
 const RegisterModal = () => {
-  // const {isOpen} = useSelector((store: RootState)=>store.modal)
+  const [isAvailable, setIsAvailable] = useState(true)
   const loginModal = useLoginModal()
   const registerModal = useRegisterModal()
   const toggleModal = useCallback(() => {
@@ -49,46 +47,61 @@ const RegisterModal = () => {
         registerModal.onClose()
         loginModal.onOpen()
       })
-      .catch((e) => console.log(e))
+      .catch((e) => setIsAvailable(false))
   }
 
   const body = (
-    <form>
-      <div className="">
-        <label htmlFor="email">Email</label>
+    <form className="flex flex-col justify-items-center">
+      <div className="mb-3">
+        <label htmlFor="email" className="mr-16">
+          Email
+        </label>
         <input
           id="email"
           placeholder="email"
           type="text"
+          className="border-2 border-gray-500 rounded-md w-[80%] p-1"
           {...register('email')}
         />
       </div>
-      <div className="">
-        <label htmlFor="username">Username</label>
+      <div className="mb-3">
+        <label htmlFor="username" className="mr-7">
+          Username
+        </label>
         <input
           id="username"
           placeholder="username"
           type="text"
+          className="border-2 border-gray-500 rounded-md w-[80%] p-1"
           {...register('username')}
         />
       </div>
-      <div className="">
-        <label htmlFor="password">Password</label>
+      <div className="-mb-10">
+        <label htmlFor="password" className="mr-8">
+          Password
+        </label>
         <input
           id="password"
           placeholder="password"
           type="text"
+          className="border-2 border-gray-500 rounded-md w-[80%] p-1"
           {...register('password')}
         />
       </div>
-      {/* <button type="submit">Register</button> */}
+      <p className="flex justify-center text-red-500 mt-5">
+        {isAvailable
+          ? ''
+          : 'This email is already associated with an existing account'}
+      </p>
     </form>
   )
 
   const footer = (
-    <div className="">
-      <span>Already have an account with Study Buddy?</span>
-      <button onClick={toggleModal}>Sign in</button>
+    <div className="flex flex-col">
+      <span className="pl-[25%]">
+        Already have an account with Study Buddy?
+      </span>
+      <button className='text-blue-500' onClick={toggleModal}>Sign in</button>
     </div>
   )
 

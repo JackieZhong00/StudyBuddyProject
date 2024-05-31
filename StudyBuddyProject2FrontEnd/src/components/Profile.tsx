@@ -12,8 +12,9 @@ import profile from '../images/profile.jpg'
 import axios from 'axios'
 import Navbar from './Navbar'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { PromptComponent } from './PromptComponent'
 
-type ProfileFormData = {
+export type ProfileFormData = {
   date1: Date
   date2: Date
   date3: Date
@@ -29,7 +30,7 @@ type ProfileFormData = {
   hobbiesPrompt: string
 }
 
-interface UserData {
+type UserData = {
   email: string
   username: string
   dates: Date[]
@@ -40,9 +41,7 @@ interface UserData {
   _id: string
 }
 
-interface UseParams {
-  id: string
-}
+
 
 function convertToBase64(file: File) {
   return new Promise((resolve, reject) => {
@@ -105,7 +104,8 @@ const Profile = () => {
     control,
     reset,
     handleSubmit,
-    formState: { errors, dirtyFields, isDirty},
+    setError,
+    formState: { isSubmitting },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(schema),
     defaultValues: async () => {
@@ -130,7 +130,6 @@ const Profile = () => {
     },
   })
 
-  // const pictureUpload = register('pictureUpload')
 
   const { field: date1 } = useController({ name: 'date1', control })
   const { field: date2 } = useController({ name: 'date2', control })
@@ -149,10 +148,11 @@ const Profile = () => {
     }
   }, [])
 
-  const handleSave: SubmitHandler<ProfileFormData> = (
+  //function that is passed to handlesubmit, designating it as func that handles form submission
+  const handleSave: SubmitHandler<ProfileFormData> = async (
     event: ProfileFormData
   ) => {
-    console.log({ event })
+    try {
     const reformattedEvent = {
       pictureUpload: image,
       locations: [
@@ -170,24 +170,24 @@ const Profile = () => {
         event.hobbiesPrompt,
       ],
     }
-    axios
+    const res = await axios
       .post(`http://localhost:8080/users/${id}`, reformattedEvent, {
         withCredentials: true,
       })
-      .then((res) => {
-        setFetchedUserInfo(res.data)
-        toast.success('Profile Info Submitted!')
-        console.log(res)
-        reset(event)
-      })
-      .catch((e) => toast.error('There was an error!'))
+    setFetchedUserInfo(res.data)
+    toast.success("Profile Info Submitted!")
+    reset(event)
+    } catch (error) {
+      toast.error(`You've ran into this error: ${error}`)
+    }
+    
   }
 
   console.log(fetchedUserInfo)
   const userProfilePicture =
     image.myFile || fetchedUserInfo.pictureUpload || profile
   return (
-    <div className="absolute bg-black text-white">
+    <div className="absolute bg-pink-300 ">
       <form className="" onSubmit={handleSubmit(handleSave)}>
         <section className="flex flex-row w-screen justify-center">
           <div className="p-10">
@@ -223,13 +223,13 @@ const Profile = () => {
               name="date1"
               selected={date1.value}
               onChange={(date) => handleDateChange('date1', date)}
-              className="border border-solid border-white rounded-md p-1 mr-10 bg-black"
+              className="border border-solid border-black rounded-md p-1 mr-10 bg-white"
             />
             <label htmlFor="location1" className="mr-5">
               Location:
             </label>
             <input
-              className="border border-solid border-white bg-black rounded-md p-1"
+              className="border border-solid border-white bg-white rounded-md p-1"
               type="text"
               id="location1"
               {...register('location1')}
@@ -244,13 +244,13 @@ const Profile = () => {
               name="date2"
               selected={date2.value}
               onChange={(date) => handleDateChange('date2', date)}
-              className="border border-solid border-white bg-black rounded-md p-1 mr-10"
+              className="border border-solid border-black rounded-md p-1 mr-10 bg-white "
             />
             <label htmlFor="location2" className="mr-5">
               Location:
             </label>
             <input
-              className="border border-solid border-white bg-black rounded-md p-1"
+              className="border border-solid border-black bg-white text-black rounded-md p-1"
               type="text"
               id="location2"
               {...register('location2')}
@@ -265,13 +265,13 @@ const Profile = () => {
               name="date3"
               selected={date3.value}
               onChange={(date) => handleDateChange('date3', date)}
-              className="border border-solid border-white bg-black rounded-md p-1 mr-10"
+              className="border border-solid border-black rounded-md p-1 mr-10 bg-white text-black"
             />
             <label htmlFor="location3" className="mr-5">
               Location:
             </label>
             <input
-              className="border border-solid border-white bg-black rounded-md p-1"
+              className="border border-solid border-black bg-white text-black rounded-md p-1"
               type="text"
               id="location3"
               {...register('location3')}
@@ -286,13 +286,13 @@ const Profile = () => {
               name="date4"
               selected={date4.value}
               onChange={(date) => handleDateChange('date4', date)}
-              className="border border-solid border-white bg-black rounded-md p-1 mr-10"
+              className="border border-solid border-black rounded-md p-1 mr-10 bg-white text-black"
             />
             <label htmlFor="location4" className="mr-5">
               Location:
             </label>
             <input
-              className="border border-solid border-white bg-black rounded-md p-1"
+              className="border border-solid border-black bg-white rounded-md p-1"
               type="text"
               id="location4"
               {...register('location4')}
@@ -308,19 +308,19 @@ const Profile = () => {
               rows={5}
               cols={50}
               id="contactInfo"
-              className="border border-solid border-white rounded-md bg-black block"
+              className="border border-solid border-white rounded-md bg-white block"
               {...register('contactInfo')}
             />
           </div>
           <div className="p-10">
-            <label htmlFor="careerPrompt" className=''>
+            <label htmlFor="careerPrompt" className="">
               What are your career aspirations?
             </label>
             <textarea
               rows={5}
               cols={50}
               id="careerPrompt"
-              className="border border-solid border-white rounded-md bg-black block"
+              className="border border-solid border-white rounded-md bg-white block"
               {...register('careerPrompt')}
             />
           </div>
@@ -332,7 +332,7 @@ const Profile = () => {
               rows={5}
               cols={50}
               id="enviroPrompt"
-              className="border border-solid border-white rounded-md bg-black block"
+              className="border border-solid border-white rounded-md bg-white block"
               {...register('enviroPrompt')}
             />
           </div>
@@ -344,7 +344,7 @@ const Profile = () => {
               rows={5}
               cols={50}
               id="traitsPrompt"
-              className="border border-solid border-white rounded-md bg-black block"
+              className="border border-solid border-white rounded-md bg-white block"
               {...register('traitsPrompt')}
             />
           </div>
@@ -356,13 +356,18 @@ const Profile = () => {
               rows={2}
               cols={50}
               id="hobbiesPrompt"
-              className="border border-solid border-white rounded-md bg-black block"
+              className="border border-solid border-white rounded-md bg-white block"
               {...register('hobbiesPrompt')}
             />
           </div>
+          <PromptComponent label={"a"} register={register}/>
           <div className="flex flex-row justify-center mb-10">
-            <button type="submit" className="border border-solid border-white rounded-md py-3 px-10 bg-blue-500 text-xl font-bold">
-              Submit
+            <button
+              type="submit"
+              disabled = {isSubmitting}
+              className="border border-solid border-white rounded-md py-3 px-10 bg-blue-500 text-white text-xl font-bold"
+            >
+              {isSubmitting ? "Loading" : "Submit" }
             </button>
           </div>
         </section>

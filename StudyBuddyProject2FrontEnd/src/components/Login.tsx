@@ -2,7 +2,7 @@ import useLoginModal from '../hooks/useLoginModal'
 import useRegisterModal from '../hooks/useRegisterModal'
 import LoginModal from '../modals/LoginModal'
 import RegisterModal from '../modals/RegisterModal'
-// import { openModal } from '../hooks/modalSlice'
+
 
 const Login = () => {
   const loginModal = useLoginModal()

@@ -3,14 +3,14 @@ import toast from 'react-hot-toast'
 interface LocationDateCardProps {
   date: string
   location: string
-  id: string
+  id: string | undefined
 }
 
-const LocationDateCard: React.FC<LocationDateCardProps> = ({
+const LocationDateCard = ({
   date,
   location,
   id
-}) => {
+}: LocationDateCardProps) => {
   const addEvent = () => {
     const event = { savedEvent: {date, location} }
     axios
@@ -21,7 +21,7 @@ const LocationDateCard: React.FC<LocationDateCardProps> = ({
 
   return (
     <button
-      className="border border-solid border-black bg-white rounded-lg w-28 h-40"
+      className="border border-solid border-black bg-white rounded-lg w-28 h-40 overflow-y-auto"
       onClick={addEvent}
     >
       <div>

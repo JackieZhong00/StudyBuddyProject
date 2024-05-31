@@ -57,7 +57,7 @@ const Calendar = () => {
   console.log(savedEvents)
 
   return (
-    <section className="bg-black">
+    <section className="bg-pink-300">
       <div className="fixed top-10 flex-col justify-center align-middle ml-10 h-full">
         <Navbar />
       </div>

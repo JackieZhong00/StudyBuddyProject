@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { IoMdClose } from 'react-icons/io'
 
-interface ModalProps {
+type ModalProps = {
   title: string
   body: React.ReactElement
   footer: React.ReactElement
@@ -11,7 +11,7 @@ interface ModalProps {
   isAuthorized: boolean
 }
 
-const Modal: React.FC<ModalProps> = ({
+const Modal = ({
   title,
   body,
   isOpen,
@@ -19,7 +19,7 @@ const Modal: React.FC<ModalProps> = ({
   footer,
   onSubmit,
   isAuthorized
-}) => {
+} : ModalProps) => {
   const [showModal, setShowModal] = useState(isOpen)
   
   useEffect(() => {
